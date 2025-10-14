@@ -3,38 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- Title -->
     <title>Sirena Harrop</title>
-
-    <!-- Stylesheets -->
     <link rel="stylesheet" href="style.css">
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Hind&family=Montserrat:wght@500&display=swap" rel="stylesheet">
-
-    <!-- Scripts -->
-
+    <script src="https://www.google.com/recaptcha/api.js?render=6LcgYuorAAAAACiOllWlrR5KZV9V_yRIVMfAo9Vz"></script>
 </head>
 <body>
-
-    <div class="mainContainer"> 
-        <div id="naviContainer">
-            <h1>Hello!</h1>
-            <div id="navi">
-                <div id="About" class="navTab">About</div>
-                <div id="Resume" class="navTab">Resume/CV</div>
-                <div id="Writing" class="navTab">Writing</div>
-                <div id="Contact" class="navTab">Contact</div>
+   <div class="floating-container">
+        <!-- Left Sidebar -->
+        <aside class="sidebar">
+            <h1>Sirena Harrop</h1>
+            <p class="subtitle">Master of Public Policy Student @ UC Berkeley</p>
+            <img src="assets/images/profilepic.png" alt="Headshot of Sirena in a red sweater on a gaussian background." class="profile-img">
+            <div class="social-links">
+                <a href="mailto:ssharrop@berkeley.edu">📬 ssharrop@berkeley.edu</a>
+                <span>📋 Link to <a href="#" class="captcha-link">my CV</a></span>
+                <!-- to add: twitter and substack 
+                <span> <a href=""></a></span>
+                -->
             </div>
-        </div>
-        <div id="contentContainer">
-            I'm under construction come back soon!
+        </aside>
+
+        <!-- Right Content Area -->
+        <main class="content">
+            <!-- Desktop Tabs -->
+            <nav class="tabs">
+                <button class="tab-btn active" data-tab="about">About</button>
+                <button class="tab-btn" data-tab="experience">Experience and Projects</button>
+                <button class="tab-btn" data-tab="contact">Contact</button>
+            </nav>
+
+            <div class="content-inner">
+                <!-- Mobile Dropdown -->
+                <select class="mobile-nav" id="mobileNav">
+                    <option value="about">About</option>
+                    <option value="experience">Experience and Projects</option>
+                    <option value="contact">Contact</option>
+                </select>
+
+                <!-- Tab Content -->
+                <div class="tab-content active" id="about">
+                    <h2>About Me</h2>
+                    <p>I am a Master's student pursuing an MPP at UC Berkeley's Goldman School of Public Policy. Previously, I completed a Bachelor of Commerce in Business and Computer Science and worked as a software engineer.</p>
+                    <p>My academic interests are primarily at the intersection of frontier technologies and society. I am particularly interested in understanding how new technologies affect labor, migration, and livelihoods on a global level. </p>
+                    <p>Currently, I'm conducting research with Professor Diag Davenport at the Responsibility Lab, exploring bias diffusion in algorithms.</p>
+                    <p>In anticipation of my graduation in the spring, I'm seeking research positions where I can deepen my understanding of these dynamics and contribute to evidence-based policy solutions.</p>
+                </div>
+
+                <!-- Tab Content -->
+                <div class="tab-content" id="experience">
+                    <h2>Experience, Writing, and Projects</h2>
+
+                    <div class="project-item">
+                        <div class="item-title">Responsibility Lab: Algorithmic Bias Diffusion Project</div>
+                        <div class="item-meta">WIP, 2025</div>
+                        <p class="item-description">Working on a project identifying algorithmic bias diffusion under Professor Diag Davenport.</p>
+                        <div class="tags">
+                            <span class="tag">Prolific</span>
+                            <span class="tag">R</span>
+                            <span class="tag">LaTeX</span>
+                        </div>
+                    </div>
+                                        
+                    <div class="project-item">
+                        <div class="item-title">Democracy Policy Initative: Political Psycology of American Democracy</div>
+                        <p class="item-description">Through the spring term and summer, I worked with Dean David Wilson on the Political Psycology of American Democracy. I performed cleaned datasets spanning multiple surveys, conducted literature reviews, and utilized the survey data to engage in my own research on Civic Flourishing. </p>
+                        <div class="tags">
+                            <span class="tag">SPSS</span>
+                            <span class="tag">R</span>
+                            <span class="tag">Excel</span>
+                        </div>
+                        <div style="margin-top: 1rem;">
+                            <a href="https://gspp.berkeley.edu/research-and-impact/policy-initiatives/democracy-policy-initiative" class="btn btn-secondary">Link to DPI Homepage</a>
+                        </div>
+                    </div>
+                    
+                    <div class="project-item">
+                        <div class="item-title">Popvox: Casework Notes on the One Big Beautiful Bill Act</div>
+                        <div class="item-meta">Published Summer 2025</div>
+                        <p class="item-description">Over the summer, I had the wonderful opportunity to intern at POPVOX, an organization focused on legislative capacity and government modernization. One of my contributions during my internship was a written piece informing caseworkers and congressional staffers about the content of the One Big Beautiful Bill Act and how their workload may change following the bill's passage.</p>
+                        <div class="tags">
+                            <span class="tag">Writing</span>
+                            <span class="tag">Factsheet</span>
+                            <span class="tag">Congress</span>
+                        </div>
+                        <div style="margin-top: 1rem;">
+                            <a href="https://www.popvox.org/case-notes/obbba" class="btn">Link to Blog Post</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Content -->
+                <div class="tab-content" id="contact">
+                    <h1> Reach out!</h1>
+                    <p style="margin-bottom: 1rem;">I am currently job searching for roles starting Summer 2026. I am interested in any position where I can engage in research or policy analysis. If you feel I am a good fit for a position you are familiar with please reach out! Otherwise, I'd still love to hear from you. I respond fastest via email.</p>
+                    <p><strong>My personal inbox:</strong> hello@sirenaharrop.com</p>
+                    <p><strong>My berkeley inbox:</strong> ssharrop@berkeley.edu</p>
+                </div>
+            </div>
+        </main>
+    </div>
+    <!-- Captcha Modal -->
+    <div class="captcha-overlay" id="captchaOverlay">
+        <div class="captcha-modal">
+            <h2>Verify you're human</h2>
+            <p>Please complete the captcha to continue</p>
+            <div class="g-recaptcha" data-sitekey="6LcgYuorAAAAACiOllWlrR5KZV9V_yRIVMfAo9Vz" data-callback="onCaptchaSuccess"></div>
+            <div class="captcha-buttons">
+                <button class="captcha-btn captcha-btn-cancel" onclick="closeCaptcha()">Cancel</button>
+            </div>
         </div>
     </div>
 
+    <script>
+        // Tab switching functionality
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const mobileNav = document.getElementById('mobileNav');
+
+        function switchTab(tabName) {
+            // Remove active class from all buttons and contents
+            tabBtns.forEach(btn => btn.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+
+            // Add active class to selected tab
+            const selectedBtn = document.querySelector(`[data-tab="${tabName}"]`);
+            const selectedContent = document.getElementById(tabName);
+            
+            if (selectedBtn) selectedBtn.classList.add('active');
+            if (selectedContent) selectedContent.classList.add('active');
+        }
+
+        // Desktop tab clicks
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                switchTab(btn.dataset.tab);
+            });
+        });
+
+        // Mobile dropdown
+        mobileNav.addEventListener('change', (e) => {
+            switchTab(e.target.value);
+        });
+
+        // Store the link that was clicked
+        let pendingLink = null;
+
+        // Captcha link handling
+        document.querySelectorAll('.captcha-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                pendingLink = this.href;
+                document.getElementById('captchaOverlay').classList.add('active');
+            });
+        });
+
+        // Close captcha modal
+        function closeCaptcha() {
+            document.getElementById('captchaOverlay').classList.remove('active');
+            pendingLink = null;
+            if (typeof grecaptcha !== 'undefined') {
+                grecaptcha.reset();
+            }
+        }
+
+        // Called when captcha is successfully completed
+        function onCaptchaSuccess(token) {
+            if (pendingLink) {
+                // Open the link
+                window.location.href = pendingLink;
+            }
+            closeCaptcha();
+        }
+    </script>
 </body>
 </html>
