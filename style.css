@@ -103,6 +103,13 @@ body {
     flex: 1;
 }
 
+.footer{
+    padding: .5rem  0rem  .5rem 2.5rem;
+    color: #2c3e50;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.6rem
+}
+
 /* Mobile Dropdown - Hidden by default */
 .mobile-nav {
     display: none;
