@@ -32,7 +32,7 @@ body {
 .sidebar {
     background: #dcdcdc;
     padding: 6rem 2rem;
-    border-right: 1px solid #e0e0e0;
+    border-right: 1px solid #dcdcdc;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -129,7 +129,7 @@ body {
     display: flex;
     gap: 0.5rem;
     padding: 1.5rem 2.5rem 0 2.5rem;
-    border-bottom: 2px solid #e0e0e0;
+    border-bottom: 2px solid #dcdcdc;
     flex-shrink: 0;
 }
 
