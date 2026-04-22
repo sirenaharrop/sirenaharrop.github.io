@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>California's Workforce Development System</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #f8f9fa; font-family: 'IBM Plex Sans', sans-serif; }
+  </style>
+  <!-- React from CDN -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <!-- Babel so we can write JSX directly in the browser -->
+  <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+
+    // ════════════════════════════════════════════════════════════════
+    // POSITION & SIZE CONFIG
+    // ════════════════════════════════════════════════════════════════
+    const BOXES = {
+      "us-dol":       { x: 720, y: 30, w: 120, h: 50, label: "U.S. DOL / ETA", sub: "WIOA I, III", zone: "federal" },
+      "us-ed":        { x: 850, y: 30, w: 130, h: 50, label: "U.S. Dept of Education", sub: "WIOA II, Perkins V", zone: "federal" },
+      "us-hhs":       { x: 590, y: 30, w: 120, h: 50, label: "U.S. HHS / USDA", sub: "TANF, SNAP E&T", zone: "federal" },
+      "gen-fund":     { x: 30, y: 30, w: 140, h: 50, label: "CA General Fund / Prop 98", zone: "state-funding" },
+      "payroll-tax":  { x: 190, y: 30, w: 140, h: 50, label: "CA Employer Payroll Tax", sub: "~$7/worker/yr", zone: "state-funding" },
+      "edd":          { x: 50, y: 200, w: 150, h: 50, label: "EDD", sub: "WIOA Title I & III, UI, CalJOBS", zone: "state-agency" },
+      "dir-das":      { x: 220, y: 200, w: 150, h: 50, label: "DIR / Apprenticeship Stds", sub: "Apprenticeship validation", zone: "state-agency" },
+      "cwdb":         { x: 50, y: 270, w: 150, h: 50, label: "CWDB", sub: "Board — policy, HRTP admin", zone: "state-agency", dashed: true },
+      "etp":          { x: 220, y: 270, w: 150, h: 50, label: "Employment Training Panel", sub: "Panel — ~$95M/yr", zone: "state-agency", dashed: true },
+      "go-biz":       { x: 430, y: 180, w: 130, h: 45, label: "GO-Biz", sub: "Jobs First admin", zone: "state-agency" },
+      "cdss":         { x: 430, y: 240, w: 130, h: 45, label: "CDSS", sub: "CalWORKs, CalFresh E&T", zone: "state-agency" },
+      "dor":          { x: 430, y: 300, w: 130, h: 45, label: "Dept of Rehabilitation", sub: "WIOA Title IV, via CalHHS", zone: "state-agency" },
+      "ccc":          { x: 590, y: 180, w: 150, h: 45, label: "CCC Chancellor's Office", sub: "Board of Govs; SWP $248M+", zone: "state-agency" },
+      "cde":          { x: 590, y: 240, w: 150, h: 45, label: "CDE", sub: "Elected Supt; CTE, CTEIG $300M", zone: "state-agency" },
+      "dgs":          { x: 590, y: 300, w: 150, h: 45, label: "DGS / OPSC", sub: "K-16 grant admin", zone: "state-agency" },
+      "sb638":        { x: 775, y: 190, w: 150, h: 40, label: "CA Education Interagency Council", sub: "SB 638 — advisory only", zone: "state-agency", dashed: true },
+      "c2c":          { x: 80, y: 420, w: 140, h: 45, label: "Cradle-to-Career (C2C)", sub: "Longitudinal, est. 2019", zone: "data", dashed: true },
+      "caljobs":      { x: 250, y: 420, w: 130, h: 45, label: "CalJOBS", sub: "EDD labor exchange system", zone: "data", dashed: true },
+      "lmid":         { x: 410, y: 420, w: 140, h: 45, label: "EDD LMID", sub: "Labor market information", zone: "data", dashed: true },
+      "caalskills":   { x: 580, y: 420, w: 140, h: 45, label: "CAAL-Skills", sub: "Cross-program evaluation", zone: "data", dashed: true },
+      "employers":    { x: 830, y: 420, w: 140, h: 40, label: "Employers", sub: "Industry, SMBs", zone: "stakeholder" },
+      "unions":       { x: 830, y: 475, w: 140, h: 40, label: "Labor Unions", sub: "SEIU, UNITE HERE, ATU, UFW...", zone: "stakeholder" },
+      "cbo":          { x: 830, y: 530, w: 140, h: 40, label: "CBOs & Reentry Providers", zone: "stakeholder" },
+      "intermediaries":{ x: 830, y: 585, w: 140, h: 50, label: "Third-Party Intermediaries", sub: "Convening, employer engagement, advocacy...", zone: "stakeholder" },
+      "philanthropy": { x: 830, y: 650, w: 140, h: 40, label: "Philanthropy", sub: "Innovation funding, capacity building", zone: "stakeholder" },
+      "regional-consortia": { x: 50, y: 540, w: 150, h: 45, label: "8 Regional Consortia", sub: "Bay Area, LA, SD-Imperial...", zone: "local" },
+      "local-wdb":    { x: 220, y: 540, w: 150, h: 45, label: "45 Local WDBs", sub: "LA City, SF, Fresno...", zone: "local" },
+      "jobs-first-collabs": { x: 390, y: 540, w: 160, h: 45, label: "13 Jobs First Collaboratives", zone: "local" },
+      "ajcc":         { x: 570, y: 540, w: 150, h: 45, label: "200+ AJCCs", sub: "America's Job Centers", zone: "local" },
+      "cc-local":     { x: 50, y: 610, w: 130, h: 40, label: "116 Community Colleges", zone: "local" },
+      "county-welfare":{ x: 200, y: 610, w: 140, h: 40, label: "58 County Welfare Depts", zone: "local" },
+      "dor-dist":     { x: 360, y: 610, w: 130, h: 40, label: "DOR District Offices", sub: "13 regions", zone: "local" },
+      "k12-lea":      { x: 510, y: 610, w: 130, h: 40, label: "K-12 LEAs", sub: "1000+ districts", zone: "local" },
+      "county-ed":    { x: 660, y: 610, w: 130, h: 40, label: "County Offices of Ed", zone: "local" },
+      "uc":           { x: 60, y: 690, w: 130, h: 40, label: "UC Campuses", sub: "Regents — autonomous", zone: "higher-ed" },
+      "csu":          { x: 210, y: 690, w: 130, h: 40, label: "CSU Campuses", sub: "Board of Trustees", zone: "higher-ed" },
+      "workers":      { x: 250, y: 770, w: 500, h: 55, label: "CALIFORNIANS — Workers and Job Seekers", zone: "workers" },
+    };
+
+    const ZONES = [
+      { id: "federal", x: 570, y: 10, w: 420, h: 80, label: "FEDERAL AGENCIES & FUNDING", bg: "#e8eaf6", border: "#9fa8da" },
+      { id: "state-funding", x: 10, y: 10, w: 340, h: 80, label: "CALIFORNIA STATE FUNDING", bg: "#fff8e1", border: "#ffe082" },
+      { id: "state-agency", x: 20, y: 120, w: 920, h: 240, label: "STATE AGENCIES & GOVERNING BODIES", bg: "#f5f5f5", border: "#bdbdbd" },
+      { id: "lwda-box", x: 30, y: 160, w: 360, h: 175, label: "LWDA", bg: "#ede7f6", border: "#6c5ce7", dotted: true },
+      { id: "data-zone", x: 50, y: 395, w: 700, h: 85, label: "DATA SYSTEMS (siloed — no integration)", bg: "#e3f2fd", border: "#90caf9" },
+      { id: "local", x: 30, y: 510, w: 780, h: 160, label: "LOCAL & REGIONAL DELIVERY", bg: "#e8f5e9", border: "#a5d6a7" },
+      { id: "stakeholder", x: 815, y: 390, w: 170, h: 320, label: "NON-GOVT STAKEHOLDERS", bg: "#fffde7", border: "#fff176" },
+      { id: "higher-ed", x: 40, y: 675, w: 320, h: 65, label: "HIGHER ED (K-16 Partners)", bg: "#f3e5f5", border: "#ce93d8" },
+      { id: "workers-zone", x: 230, y: 755, w: 540, h: 80, label: "", bg: "#fff8e1", border: "#ffa000" },
+    ];
+
+    const PROGRAMS = {
+      hrtp:     { label: "HRTPs", color: "#e84393", entities: ["cwdb","dir-das","unions","employers","cbo","local-wdb","cc-local","intermediaries","workers"] },
+      jobsfirst:{ label: "Jobs First", color: "#00b894", entities: ["go-biz","jobs-first-collabs","local-wdb","cc-local","employers","unions","cbo","k12-lea","intermediaries","philanthropy","workers"] },
+      k16:      { label: "K-16 Collaboratives", color: "#0984e3", entities: ["dgs","k12-lea","uc","csu","cc-local","employers","county-ed","c2c","workers"] },
+      sb638:    { label: "SB 638 (Interagency Council)", color: "#ff9800", entities: ["sb638","edd","cwdb","cde","ccc","cdss","dor","dgs"] },
+    };
+
+    const FUNDING = {
+      "wioa-i":     { label: "WIOA Title I", group: "ongoing", color: "#6c5ce7", arrows: [
+        { from: "us-dol", to: "edd", amt: "$530M" },
+        { from: "edd", to: "cwdb", amt: "15% = ~$30M" },
+        { from: "edd", to: "local-wdb", amt: "~$334M" },
+        { from: "local-wdb", to: "ajcc", amt: "Contracts/ITAs" },
+        { from: "ajcc", to: "workers", amt: "Job search, counseling" },
+      ]},
+      "wioa-iii":   { label: "Wagner-Peyser (III)", group: "ongoing", color: "#a29bfe", arrows: [
+        { from: "us-dol", to: "edd", amt: "~$83M" },
+        { from: "edd", to: "ajcc", amt: "Staffing" },
+      ]},
+      "wioa-ii":    { label: "WIOA Title II", group: "ongoing", color: "#74b9ff", arrows: [
+        { from: "us-ed", to: "cde", amt: "~$85M" },
+        { from: "cde", to: "k12-lea", amt: "Competitive grants" },
+        { from: "cde", to: "cc-local", amt: "Adult schools" },
+      ]},
+      "wioa-iv":    { label: "WIOA Title IV (VR)", group: "ongoing", color: "#e17055", arrows: [
+        { from: "us-hhs", to: "dor", amt: "Formula" },
+        { from: "dor", to: "dor-dist", amt: "District alloc." },
+        { from: "dor-dist", to: "workers", amt: "VR services" },
+      ]},
+      "calworks":   { label: "CalWORKs / TANF", group: "ongoing", color: "#ff9800", arrows: [
+        { from: "us-hhs", to: "cdss", amt: "~$3.7B block" },
+        { from: "cdss", to: "county-welfare", amt: "~$1.6B single alloc." },
+        { from: "county-welfare", to: "workers", amt: "Welfare-to-work" },
+      ]},
+      "swp":        { label: "Strong Workforce (Prop 98)", group: "ongoing", color: "#00b894", arrows: [
+        { from: "gen-fund", to: "ccc", amt: "~$248M ongoing" },
+        { from: "ccc", to: "cc-local", amt: "Formula" },
+        { from: "cc-local", to: "workers", amt: "CTE programs" },
+      ]},
+      "etp-flow":   { label: "ETP (Payroll Tax)", group: "ongoing", color: "#ab47bc", arrows: [
+        { from: "payroll-tax", to: "etp", amt: "~$95M/yr" },
+        { from: "etp", to: "employers", amt: "Reimburse (90-day)" },
+        { from: "employers", to: "workers", amt: "Incumbent training" },
+      ]},
+      "perkins":    { label: "Perkins V + CTEIG", group: "ongoing", color: "#0277bd", arrows: [
+        { from: "us-ed", to: "cde", amt: "Perkins ~$52M" },
+        { from: "gen-fund", to: "cde", amt: "CTEIG $300M" },
+        { from: "cde", to: "k12-lea", amt: "Grants to LEAs" },
+        { from: "k12-lea", to: "workers", amt: "CTE pathways" },
+      ]},
+      "hrtp-fund":  { label: "HRTP + Breaking Barriers", group: "time-limited", color: "#e84393", arrows: [
+        { from: "gen-fund", to: "cwdb", amt: "~$240M cumul." },
+        { from: "cwdb", to: "unions", amt: "Partnership grants" },
+        { from: "cwdb", to: "cc-local", amt: "Training delivery" },
+        { from: "unions", to: "workers", amt: "Pre-apprenticeship" },
+      ]},
+      "jobsfirst-fund": { label: "Jobs First (ARPA)", group: "time-limited", color: "#00b894", arrows: [
+        { from: "us-dol", to: "go-biz", amt: "$600M one-time" },
+        { from: "go-biz", to: "jobs-first-collabs", amt: "Competitive" },
+        { from: "jobs-first-collabs", to: "intermediaries", amt: "Regional invest." },
+        { from: "jobs-first-collabs", to: "workers", amt: "Training, placement" },
+      ]},
+      "k16-fund":   { label: "K-16 Grants", group: "time-limited", color: "#0984e3", arrows: [
+        { from: "gen-fund", to: "dgs", amt: "$250M one-time" },
+        { from: "dgs", to: "uc", amt: "Up to $20M each" },
+        { from: "dgs", to: "csu", amt: "Collaborative grants" },
+        { from: "dgs", to: "cc-local", amt: "Required partner" },
+        { from: "dgs", to: "k12-lea", amt: "Required partner" },
+      ]},
+      "apprenticeship": { label: "Apprenticeship Funding", group: "time-limited", color: "#d63031", arrows: [
+        { from: "gen-fund", to: "dir-das", amt: "~$72M" },
+        { from: "dir-das", to: "employers", amt: "Earn-and-learn" },
+        { from: "dir-das", to: "unions", amt: "Registered programs" },
+        { from: "employers", to: "workers", amt: "Apprenticeships" },
+      ]},
+    };
+
+    const DATAFLOWS = {
+      "c2c-flows":      { label: "Cradle-to-Career", color: "#1976d2", arrows: [
+        { from: "cde", to: "c2c", amt: "K-12 student data" },
+        { from: "ccc", to: "c2c", amt: "CC enrollment/completion" },
+        { from: "uc", to: "c2c", amt: "UC enrollment data" },
+        { from: "csu", to: "c2c", amt: "CSU enrollment data" },
+        { from: "edd", to: "c2c", amt: "Wage/employment records" },
+      ]},
+      "caljobs-flows":  { label: "CalJOBS", color: "#00897b", arrows: [
+        { from: "edd", to: "caljobs", amt: "Operates system" },
+        { from: "local-wdb", to: "caljobs", amt: "Case management data" },
+        { from: "ajcc", to: "caljobs", amt: "Service records" },
+      ]},
+      "lmid-flows":     { label: "EDD LMID", color: "#5c6bc0", arrows: [
+        { from: "edd", to: "lmid", amt: "Produces LMI data" },
+        { from: "lmid", to: "local-wdb", amt: "Regional labor data" },
+        { from: "lmid", to: "cwdb", amt: "State planning data" },
+      ]},
+      "caalskills-flows": { label: "CAAL-Skills", color: "#8d6e63", arrows: [
+        { from: "edd", to: "caalskills", amt: "UI wage records" },
+        { from: "cwdb", to: "caalskills", amt: "Program enrollment" },
+        { from: "cc-local", to: "caalskills", amt: "Training outcomes" },
+        { from: "cde", to: "caalskills", amt: "Adult ed outcomes" },
+      ]},
+    };
+
+    // ════════════════════════════════════════════════════════════════
+    // ORTHOGONAL ARROW
+    // ════════════════════════════════════════════════════════════════
+    function getExitPoint(id, targetId) {
+      const b = BOXES[id], t = BOXES[targetId];
+      if (!b || !t) return [0, 0];
+      const bc = [b.x + b.w / 2, b.y + b.h / 2];
+      const tc = [t.x + t.w / 2, t.y + t.h / 2];
+      const dy = tc[1] - bc[1], dx = tc[0] - bc[0];
+      if (Math.abs(dy) > 15) {
+        return [Math.max(b.x + 8, Math.min(b.x + b.w - 8, tc[0])), dy > 0 ? b.y + b.h : b.y];
+      }
+      return [dx > 0 ? b.x + b.w : b.x, Math.max(b.y + 8, Math.min(b.y + b.h - 8, tc[1]))];
+    }
+    function getEntryPoint(id, sourceId) {
+      const b = BOXES[id], s = BOXES[sourceId];
+      if (!b || !s) return [0, 0];
+      const bc = [b.x + b.w / 2, b.y + b.h / 2];
+      const sc = [s.x + s.w / 2, s.y + s.h / 2];
+      const dy = sc[1] - bc[1], dx = sc[0] - bc[0];
+      if (Math.abs(dy) > 15) {
+        return [Math.max(b.x + 8, Math.min(b.x + b.w - 8, sc[0])), dy > 0 ? b.y + b.h : b.y];
+      }
+      return [dx > 0 ? b.x + b.w : b.x, Math.max(b.y + 8, Math.min(b.y + b.h - 8, sc[1]))];
+    }
+
+    function OrthoArrow({ from, to, color, label, offset = 0 }) {
+      const [sx, sy] = getExitPoint(from, to);
+      const [ex, ey] = getEntryPoint(to, from);
+      const ox = offset * 4;
+      const midY = (sy + ey) / 2 + ox;
+      const path = `M ${sx+ox} ${sy} L ${sx+ox} ${midY} L ${ex+ox} ${midY} L ${ex+ox} ${ey}`;
+      const goingDown = ey > sy;
+      let arrow;
+      if (goingDown) {
+        arrow = `${ex+ox-4},${ey-7} ${ex+ox},${ey} ${ex+ox+4},${ey-7}`;
+      } else {
+        arrow = `${ex+ox-4},${ey+7} ${ex+ox},${ey} ${ex+ox+4},${ey+7}`;
+      }
+      const lx = (sx + ex) / 2 + ox;
+      const ly = midY - 5;
+      return (
+        <g>
+          <path d={path} fill="none" stroke={color} strokeWidth={2} opacity={0.85} />
+          <polygon points={arrow} fill={color} opacity={0.85} />
+          {label && (
+            <g>
+              <rect x={lx - label.length * 2.6 - 2} y={ly - 7} width={label.length * 5.2 + 4} height={12} rx={2} fill="white" fillOpacity={0.95} stroke={color} strokeWidth={0.5} />
+              <text x={lx} y={ly + 2} textAnchor="middle" fontSize={7} fontWeight={700} fontFamily="'IBM Plex Mono', monospace" fill={color}>{label}</text>
+            </g>
+          )}
+        </g>
+      );
+    }
+
+    // ════════════════════════════════════════════════════════════════
+    // MAIN COMPONENT
+    // ════════════════════════════════════════════════════════════════
+    function App() {
+      const [activePrograms, setActivePrograms] = useState([]);
+      const [activeFunding, setActiveFunding] = useState([]);
+      const [activeData, setActiveData] = useState([]);
+
+      const toggleProg = (k) => setActivePrograms(p => p.includes(k) ? p.filter(x => x !== k) : [...p, k]);
+      const toggleFund = (k) => setActiveFunding(p => p.includes(k) ? p.filter(x => x !== k) : [...p, k]);
+      const toggleData = (k) => setActiveData(p => p.includes(k) ? p.filter(x => x !== k) : [...p, k]);
+      const toggleFundGroup = (group) => {
+        const keys = Object.entries(FUNDING).filter(([_, v]) => v.group === group).map(([k]) => k);
+        const allOn = keys.every(k => activeFunding.includes(k));
+        setActiveFunding(p => allOn ? p.filter(k => !keys.includes(k)) : [...new Set([...p, ...keys])]);
+      };
+
+      const progH = new Set();
+      activePrograms.forEach(p => PROGRAMS[p]?.entities.forEach(e => progH.add(e)));
+      const fundH = new Set();
+      activeFunding.forEach(fk => FUNDING[fk]?.arrows.forEach(a => { fundH.add(a.from); fundH.add(a.to); }));
+      const dataH = new Set();
+      activeData.forEach(dk => DATAFLOWS[dk]?.arrows.forEach(a => { dataH.add(a.from); dataH.add(a.to); }));
+      const anyFilter = activePrograms.length > 0 || activeFunding.length > 0 || activeData.length > 0;
+      const allH = new Set([...progH, ...fundH, ...dataH]);
+
+      const boxOpacity = (id) => !anyFilter ? 1 : allH.has(id) ? 1 : 0.1;
+      const boxGlow = (id) => activePrograms.filter(p => PROGRAMS[p]?.entities.includes(id)).map(p => PROGRAMS[p].color);
+
+      const btnStyle = (active, color) => ({
+        padding: "3px 8px", borderRadius: 3, border: `2px solid ${color}`,
+        background: active ? color : "#fff", color: active ? "#fff" : color,
+        fontSize: 8, fontWeight: 700, cursor: "pointer", fontFamily: "'IBM Plex Mono', monospace",
+        textTransform: "uppercase", letterSpacing: "0.03em", transition: "all 0.15s",
+      });
+
+      return (
+        <div style={{ padding: "16px 12px" }}>
+          <h1 style={{ fontSize: 22, fontWeight: 900, fontFamily: "'Playfair Display', serif", color: "#1a1a2e", margin: "0 0 3px 0" }}>
+            California's Workforce Development System
+          </h1>
+          <p style={{ fontSize: 9, color: "#aaa", margin: "0 0 12px 0", fontFamily: "'IBM Plex Mono', monospace" }}>
+            The structure of California's Workforce Development system. Click the pips below to display "programs", "funding flows", and "data flows".
+          </p>
+
+          {/* Controls */}
+          <div style={{ display: "flex", gap: 16, marginBottom: 14, flexWrap: "wrap", fontSize: 10, fontFamily: "'IBM Plex Mono', monospace" }}>
+            <div style={{ minWidth: 200 }}>
+              <div style={{ fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "#555", marginBottom: 4, fontSize: 8 }}>Programs</div>
+              <div style={{ display: "flex", gap: 3, flexWrap: "wrap" }}>
+                {Object.entries(PROGRAMS).map(([k, p]) => (
+                  <button key={k} onClick={() => toggleProg(k)} style={btnStyle(activePrograms.includes(k), p.color)}>{p.label}</button>
+                ))}
+              </div>
+            </div>
+            <div style={{ minWidth: 260 }}>
+              <div style={{ fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "#555", marginBottom: 4, fontSize: 8 }}>Funding Flows</div>
+              <div style={{ display: "flex", gap: 3, flexWrap: "wrap", marginBottom: 3 }}>
+                <button onClick={() => toggleFundGroup("ongoing")} style={btnStyle(
+                  Object.entries(FUNDING).filter(([_,v])=>v.group==="ongoing").every(([k])=>activeFunding.includes(k)), "#2d3436"
+                )}>All Ongoing</button>
+                <button onClick={() => toggleFundGroup("time-limited")} style={btnStyle(
+                  Object.entries(FUNDING).filter(([_,v])=>v.group==="time-limited").every(([k])=>activeFunding.includes(k)), "#d63031"
+                )}>All Time-Limited</button>
+              </div>
+              <div style={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+                {Object.entries(FUNDING).map(([k, f]) => (
+                  <button key={k} onClick={() => toggleFund(k)} style={{
+                    ...btnStyle(activeFunding.includes(k), f.color), fontSize: 7, padding: "2px 5px",
+                  }}>{f.label}</button>
+                ))}
+              </div>
+            </div>
+            <div style={{ minWidth: 160 }}>
+              <div style={{ fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "#555", marginBottom: 4, fontSize: 8 }}>Data Flows</div>
+              <div style={{ display: "flex", gap: 3, flexWrap: "wrap" }}>
+                {Object.entries(DATAFLOWS).map(([k, d]) => (
+                  <button key={k} onClick={() => toggleData(k)} style={btnStyle(activeData.includes(k), d.color)}>{d.label}</button>
+                ))}
+              </div>
+            </div>
+            <div style={{ display: "flex", alignItems: "flex-end" }}>
+              <button onClick={() => { setActivePrograms([]); setActiveFunding([]); setActiveData([]); }} style={{
+                padding: "4px 12px", borderRadius: 3, border: "1px solid #ccc",
+                background: !anyFilter ? "#1a1a2e" : "#fff", color: !anyFilter ? "#fff" : "#888",
+                fontSize: 9, fontWeight: 700, cursor: "pointer", fontFamily: "'IBM Plex Mono', monospace",
+              }}>Reset</button>
+            </div>
+          </div>
+
+          {/* SVG Map */}
+          <div style={{ overflowX: "auto", border: "1px solid #e0e0e0", borderRadius: 8, background: "#fff" }}>
+            <svg viewBox="0 0 1000 850" width="100%" style={{ minWidth: 860, display: "block" }}>
+              {/* Zones */}
+              {ZONES.map(z => (
+                <g key={z.id}>
+                  <rect x={z.x} y={z.y} width={z.w} height={z.h} rx={6}
+                    fill={z.bg} stroke={z.border} strokeWidth={1.5}
+                    strokeDasharray={z.dotted ? "3,3" : "none"} />
+                  {z.label && (
+                    <text x={z.x + 8} y={z.y + 14} fontSize={8} fontWeight={800}
+                      fontFamily="'IBM Plex Mono', monospace" fill={z.border}
+                      letterSpacing="0.08em">{z.label}</text>
+                  )}
+                </g>
+              ))}
+              <text x={40} y={155} fontSize={7} fontWeight={700} fontFamily="'IBM Plex Mono', monospace" fill="#6c5ce7" letterSpacing="0.05em">Governor's Cabinet: LWDA</text>
+              <text x={432} y={172} fontSize={6.5} fontWeight={700} fontFamily="'IBM Plex Mono', monospace" fill="#636e72" letterSpacing="0.04em">Governor Direct / CalHHS</text>
+              <text x={592} y={172} fontSize={6.5} fontWeight={700} fontFamily="'IBM Plex Mono', monospace" fill="#00796b" letterSpacing="0.04em">Board of Govs / Elected Supt / Other</text>
+
+              {/* Boxes */}
+              {Object.entries(BOXES).map(([id, b]) => {
+                const op = boxOpacity(id);
+                const glows = boxGlow(id);
+                const isFed = b.zone === "federal";
+                const isW = id === "workers";
+                const isD = b.zone === "data";
+                return (
+                  <g key={id} opacity={op} style={{ transition: "opacity 0.25s" }}>
+                    {glows.map((c, i) => (
+                      <rect key={i} x={b.x-3-i*3} y={b.y-3-i*3} width={b.w+6+i*6} height={b.h+6+i*6}
+                        rx={6} fill="none" stroke={c} strokeWidth={2.5} opacity={0.6} />
+                    ))}
+                    <rect x={b.x} y={b.y} width={b.w} height={b.h} rx={4}
+                      fill={isFed?"#2d3436":isW?"#fff3e0":isD?"#e3f2fd":"#fff"}
+                      stroke={b.dashed?"#999":isFed?"#555":isW?"#e65100":"#bbb"}
+                      strokeWidth={isW?2.5:1.5} strokeDasharray={b.dashed?"4,2":"none"} />
+                    <text x={b.x+b.w/2} y={b.y+(b.sub?b.h/2-2:b.h/2+3)} textAnchor="middle"
+                      fontSize={isW?11:8.5} fontWeight={700} fontFamily="'IBM Plex Sans', sans-serif"
+                      fill={isFed?"#fff":"#1a1a2e"}>{b.label}</text>
+                    {b.sub && (
+                      <text x={b.x+b.w/2} y={b.y+b.h/2+9} textAnchor="middle"
+                        fontSize={6.5} fontWeight={400} fontFamily="'IBM Plex Sans', sans-serif"
+                        fill={isFed?"#aaa":"#888"}>{b.sub}</text>
+                    )}
+                  </g>
+                );
+              })}
+
+              {/* Funding arrows */}
+              {activeFunding.map(fk => {
+                const f = FUNDING[fk];
+                return f ? f.arrows.map((a, i) => (
+                  <OrthoArrow key={`f-${fk}-${i}`} from={a.from} to={a.to} color={f.color} label={a.amt} offset={i-1} />
+                )) : null;
+              })}
+
+              {/* Data flow arrows */}
+              {activeData.map(dk => {
+                const d = DATAFLOWS[dk];
+                return d ? d.arrows.map((a, i) => (
+                  <OrthoArrow key={`d-${dk}-${i}`} from={a.from} to={a.to} color={d.color} label={a.amt} offset={i} />
+                )) : null;
+              })}
+            </svg>
+          </div>
+
+          {/* Legend */}
+          <div style={{
+            marginTop: 8, background: "#fff", borderRadius: 6, border: "1px solid #eee", padding: 8,
+            display: "flex", gap: 12, flexWrap: "wrap", fontSize: 8, fontFamily: "'IBM Plex Mono', monospace", color: "#888",
+          }}>
+            <span><strong style={{ color: "#444" }}>Legend:</strong></span>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 3 }}>
+              <span style={{ display: "inline-block", width: 14, height: 9, border: "1.5px dashed #999", borderRadius: 2 }}></span> Board / Panel / Advisory
+            </span>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 3 }}>
+              <span style={{ display: "inline-block", width: 14, height: 9, background: "#2d3436", borderRadius: 2 }}></span> Federal
+            </span>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 3 }}>
+              <span style={{ display: "inline-block", width: 14, height: 9, background: "#e3f2fd", border: "1px solid #90caf9", borderRadius: 2 }}></span> Data system
+            </span>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 3 }}>
+              <span style={{ display: "inline-block", width: 14, height: 9, border: "1.5px dotted #6c5ce7", borderRadius: 2, background: "#ede7f6" }}></span> LWDA cluster
+            </span>
+            <span>|</span>
+            <span style={{ fontWeight: 700, color: "#2d3436" }}>Ongoing = permanent annual flows</span>
+            <span style={{ fontWeight: 700, color: "#d63031" }}>Time-limited = one-time or discretionary</span>
+          </div>
+          <div style={{ marginTop: 4, fontSize: 7, color: "#bbb", fontFamily: "'IBM Plex Mono', monospace", lineHeight: 1.5 }}>
+            CalWORKs $1.6B is mostly cash assistance, not training. CWDB & ETP are boards/panels, not departments.
+            CCC Chancellor reports to Board of Governors (appointed), not Governor. CDE reports to elected State Superintendent.
+            Dollar figures are approximations — see source reference guide for citations.
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>
