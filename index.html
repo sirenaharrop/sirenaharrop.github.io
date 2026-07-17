@@ -4,22 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sirena Harrop</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <script src="https://www.google.com/recaptcha/api.js" defer></script>
 </head>
 <body>
    <div class="floating-container">
         <!-- Left Sidebar -->
         <aside class="sidebar">
-            <h1>Sirena Harrop</h1>
-            <p class="subtitle">Master of Public Policy Student @ UC Berkeley</p>
             <img src="assets/images/profilepic.png" alt="Headshot of Sirena in a red sweater on a gaussian background." class="profile-img">
+            <h1>Sirena Harrop</h1>
+            <p class="subtitle"><b>Predoctoral Researcher @ MIT</b></p>
             <div class="social-links">
-                <a href="mailto:ssharrop@berkeley.edu">📬 ssharrop@berkeley.edu</a>
-                <span>📋 Link to <a target="_blank" rel="noopener noreferrer" href="https://drive.google.com/file/d/13jq0bjSp6RXVEIbW7VUZZ97PVROnZVpH/view?usp=sharing" class="captcha-link">my CV</a></span>
-                <!-- to add: twitter and substack 
-                <span> <a href=""></a></span>
-                -->
+                <a href="mailto:ssharrop@mit.edu"> ssharrop at mit.edu</a>
+                <a target="_blank" rel="noopener noreferrer" href="https://drive.google.com/file/d/1sE-9hPActVfHdnsJJ6P6f6ziHCWIksMj/view?usp=sharing">Curriculum Vitae</a>
+                <!-- to add: twitter and substack -->
             </div>
         </aside>
 
@@ -43,10 +43,10 @@
                 <!-- Tab Content -->
                 <div class="tab-content active" id="about">
                     <h2>About Me</h2>
-                    <p>I am a Master's student pursuing an MPP at UC Berkeley's Goldman School of Public Policy. Previously, I completed a Bachelor of Commerce in Business and Computer Science and worked as a software engineer.</p>
+                    <p>I am currently a Predoctoral Researcher (RSA) with the Political Methodology Lab at <b>MIT</b>.</p>
+                    <p>I recently obtained a Master of Public Policy from <b>UC Berkeley</b>. Previously, I completed a Bachelor of Commerce with honours in Business and Computer Science at <b>UBC</b> and worked as a software engineer.</p>
                     <p>My academic interests are primarily at the intersection of frontier technologies and society. I am particularly interested in understanding how new technologies affect labor, migration, and livelihoods on a global level. </p>
-                    <p>Currently, I'm a Graduate Student Instructor (GSI) teaching 'Introduction to Public Policy' to undergraduate students with Professor Amy Lerman. I am also conducting research with Professor Diag Davenport at the Responsibility Lab, exploring bias diffusion in algorithms.</p>
-                    <p>In anticipation of my graduation in the spring, I'm seeking research positions where I can deepen my understanding of these dynamics and contribute to evidence-based policy solutions.</p>
+                    <p>Looking ahead, I will be applying to PhD programs where I can continue exploring these questions in greater depth.</p>
                 </div>
 
                 <!-- Tab Content -->
@@ -94,25 +94,14 @@
 
                 <!-- Tab Content -->
                 <div class="tab-content" id="contact">
-                    <h2> Reach out!</h2>
-                    <p style="margin-bottom: 1rem;">I am currently job searching for roles starting Summer 2026. I am interested in any position where I can engage in research or policy analysis. If you feel I am a good fit for a position you are familiar with please reach out! Otherwise, I'd still love to hear from you. I respond fastest via email.</p>
-                    <p><strong>My personal inbox:</strong> hello@sirenaharrop.com</p>
-                    <p><strong>My berkeley inbox:</strong> ssharrop@berkeley.edu</p>
+                    <h2>Reach Out</h2>
+                    <p style="margin-bottom: 1rem;">I'm currently a Predoctoral Researcher at MIT, and I'll be applying to PhD programs this cycle. I'd love to hear from current students, faculty, or anyone thinking about similar questions please reach out. Otherwise, I'd still love to hear from you. I respond fastest via email.</p>
+                    <p><strong>Personal inbox:</strong> hello@sirenaharrop.com</p>
+                    <p><strong>MIT inbox:</strong> ssharrop@mit.edu</p>
                 </div>
             </div>
-        <div class=footer> Sirena Harrop 2026. All rights reserved. </div>
+        <div class="footer">&copy; 2026 Sirena Harrop</div>
         </main>
-    </div>
-    <!-- Captcha Modal -->
-    <div class="captcha-overlay" id="captchaOverlay">
-        <div class="captcha-modal">
-            <h2>Verify you're human</h2>
-            <p>Please complete the captcha to continue</p>
-            <div class="g-recaptcha" data-sitekey="6LeKaeorAAAAAIc7bjueXRL5YYJt0xU-joU0jrct" data-callback="onCaptchaSuccess"></div>
-            <div class="captcha-buttons">
-                <button class="captcha-btn captcha-btn-cancel" onclick="closeCaptcha()">Cancel</button>
-            </div>
-        </div>
     </div>
 
     <script>
@@ -145,36 +134,6 @@
         mobileNav.addEventListener('change', (e) => {
             switchTab(e.target.value);
         });
-
-        // Store the link that was clicked
-        let pendingLink = null;
-
-        // Captcha link handling
-        document.querySelectorAll('.captcha-link').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                pendingLink = this.href;
-                document.getElementById('captchaOverlay').classList.add('active');
-            });
-        });
-
-        // Close captcha modal
-        function closeCaptcha() {
-            document.getElementById('captchaOverlay').classList.remove('active');
-            pendingLink = null;
-            if (typeof grecaptcha !== 'undefined') {
-                grecaptcha.reset();
-            }
-        }
-
-        // Called when captcha is successfully completed
-        function onCaptchaSuccess(token) {
-            if (pendingLink) {
-                // Open the link
-                window.location.href = pendingLink;
-            }
-            closeCaptcha();
-        }
     </script>
 </body>
 </html>
